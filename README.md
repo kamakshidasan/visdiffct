@@ -7,4 +7,4 @@ VisDiffCT is a tool which compares and visualizes differences between contour tr
 * Paraview/TTK
 
 ## Usage
-<pre>python run.py vtkFile1 vtkFile2</pre>
+`python run.py vtkFile1 vtkFile2`
