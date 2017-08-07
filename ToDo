@@ -1,4 +1,4 @@
-- Take missing nodes from a file [Remove the hard-coding]
-- Make helper better
-- Upload code of Recon into a folder
-- Normalize the layout output of ReCon
+- Make helper better [function for file_replace and system-call with multiple arguments]
+- Upload code of Recon into a folder [and remove jar]
+- Write better comments for unutilised Reingold algorithm [Useful for 2D Merge Trees]
+- Check seeGraph for a single CT and write a commented line in run.py
