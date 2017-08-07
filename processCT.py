@@ -20,11 +20,9 @@ file_replace('contour_tree_vtk.py', WILDCARD_1, file_path)
 os.system('paraview --script=contour_tree_vtk.py')
 
 # Run modified Recon to give out coordinates
-os.system('java -jar recon.jar ' + parent_path + os.sep + file_name + '.rg' ' '+ parent_path + os.sep + file_name + '-graph.txt')
-
-# From the coordinates make a VTP file
-os.system('python makeVTPfromRG.py '+ parent_path + os.sep + file_name + '-graph.txt')
+os.system('java -jar recon.jar ' + get_output_path(file_path, [RG_EXTENSION]) + ' ' + get_output_path(file_path, [TXT_EXTENSION]))
 
 # Replace the wildcard for next run
 file_replace('contour_tree_vtk.py', file_path, WILDCARD_1)
 
+print 'processCT.py Done! :)'

@@ -3,11 +3,28 @@ import os, re
 # List of constants
 CSV_EXTENSION = '.csv'
 RG_EXTENSION = '.rg'
-VTP_EXTENSION = '-graph-visual'
+TXT_EXTENSION = '.txt'
+VTP_EXTENSION = '.vtp'
+DOT_EXTENSION = '.dot'
+
+GRAPH_SUFFIX = '-graph'
+VISUAL_SUFFIX = '-visual'
+
+TREE_SUFFIX = '-tree'
+NODES_SUFFIX = '-nodes'
+ARCS_SUFFIX = '-arcs'
+
 WILDCARD_1 = 'adhitya'
 WILDCARD_2 = 'sushmitha'
+
 INPUT_FOLDER = 'input'
 OUTPUT_FOLDER = 'output'
+
+# Create types for new node types
+MISSING_NODE = 6
+MISSING_BEND_NODE = 7
+INITIAL_BEND_NODE = 0
+
 
 # Replace a wildcard in a file
 def file_replace(fname, pat, s_after):
@@ -31,7 +48,7 @@ def get_file_name(file_path, path = False):
 	file_name = os.path.splitext(os.path.basename(file_path))[0]
 	parent_path = get_parent_path(file_path)
 	if path:
-		return parent_path + file_name
+		return join_file_path(parent_path, file_name)
 	else:
 		return file_name
 
@@ -46,8 +63,19 @@ def get_parent_path(file_path):
 def get_input_path(file_path):
 	return os.path.join(get_parent_path(file_path), INPUT_FOLDER)
 
-def get_output_path(file_path):
-	return os.path.join(get_parent_path(file_path), OUTPUT_FOLDER)
+def get_output_path(file_path, arguments, output_folder = True):
+	output_path = os.path.join(get_parent_path(file_path), OUTPUT_FOLDER)
+
+	if output_folder == False:
+		output_path = get_parent_path(file_path)
+
+	output_path = os.path.join(output_path, get_file_name(file_path))
+
+	for argument in arguments:
+		output_path += argument
+
+	return output_path
+	
 
 def join_file_path(file_path, file_name):
-	return os.path.join(get_parent_path(file_path), file_name)
+	return os.path.join(file_path, file_name)

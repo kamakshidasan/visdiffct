@@ -16,8 +16,6 @@ vtkFile = LegacyVTKReader(FileNames=[file_path])
 
 # get active view
 renderView1 = GetActiveViewOrCreate('RenderView')
-# uncomment following to set a specific view size
-# renderView1.ViewSize = [922, 548]
 
 # show data in view
 vtkFileDisplay = Show(vtkFile, renderView1)
@@ -74,7 +72,7 @@ SetActiveSource(tTKContourForests1)
 tTKContourForests1_1 = GetActiveSource()
 
 # save data
-SaveData(join_file_path(parent_path, file_name + '.vtp'), proxy=OutputPort(tTKContourForests1_1, 1), DataMode='Ascii')
+SaveData(get_output_path(file_path, [VTP_EXTENSION]), proxy=OutputPort(tTKContourForests1_1, 1), DataMode='Ascii')
 
 # get layout
 layout1 = GetLayout()
@@ -89,8 +87,6 @@ SetActiveView(None)
 spreadSheetView1 = CreateView('SpreadSheetView')
 spreadSheetView1.ColumnToSort = ''
 spreadSheetView1.BlockSize = 1024L
-# uncomment following to set a specific view size
-# spreadSheetView1.ViewSize = [400, 400]
 
 # place view in the layout
 layout1.AssignView(2, spreadSheetView1)
@@ -102,14 +98,15 @@ tTKContourForests1Display_3 = Show(OutputPort(tTKContourForests1, 1), spreadShee
 tTKContourForests1Display_4 = Show(tTKContourForests1, spreadSheetView1)
 
 # export view
-nodes_file = join_file_path(parent_path, 'nodes-'+ file_name + '.csv')
+nodes_file = get_output_path(file_path, [NODES_SUFFIX, CSV_EXTENSION])
+
 ExportView(nodes_file, view=spreadSheetView1, FilterColumnsByVisibility=1)
 
 # show data in view
 tTKContourForests1Display_3 = Show(OutputPort(tTKContourForests1, 1), spreadSheetView1)
 
 # export view
-arcs_file =join_file_path(parent_path, 'arcs-'+ file_name + '.csv')
+arcs_file = get_output_path(file_path, [ARCS_SUFFIX, CSV_EXTENSION])
 ExportView(arcs_file, view=spreadSheetView1, FilterColumnsByVisibility=1)
 
 #### saving camera placements for all active views
@@ -182,7 +179,8 @@ with open(arcs_file, 'rb') as csvfile:
 
 # Create the new RG File for the Contour Tree
 
-rgfile = open(join_file_path(parent_path,  file_name +'.rg'), 'w')
+rgfile = get_output_path(file_path, [RG_EXTENSION])
+rgfile = open(rgfile, 'w')
 
 # First line has number of nodes and arcs
 rgfile.write(str(len(scalars)) + " " + str((len(nodes)/2)) + "\n")
@@ -197,8 +195,9 @@ for index in range(0,len(nodes),2):
 
 rgfile.close()
 
-# Just for the measure. This file is absolutely useless.
-with open(join_file_path(parent_path, file_name +'.csv'), 'w') as csvfile:
+# Write an intermediate file just for the measure. Currently, this file is absolutely useless.
+measure_path = get_output_path(file_path, [CSV_EXTENSION])
+with open(measure_path, 'w') as csvfile:
 	fieldnames = ['Node:0', 'Node:1', 'Scalar:0', 'Scalar:1', 'Type:0' , 'Type:1']
 	writer = csv.writer(csvfile, delimiter=',')
 	writer.writerow(fieldnames)	
@@ -206,7 +205,8 @@ with open(join_file_path(parent_path, file_name +'.csv'), 'w') as csvfile:
 		writer.writerow([nodes[index], nodes[index+1], scalars[nodes[index]], scalars[nodes[index+1]], nodeType[nodes[index]], nodeType[nodes[index + 1]]])
 
 
-contour_path = join_file_path(parent_path, 'tree-'+ file_name + '.dot')
+# Visualize the tree as a dot file
+contour_path = get_output_path(file_path, [DOT_EXTENSION])
 contour_file = open(contour_path, 'w')
 
 contour_file.write('graph {\n')
@@ -221,7 +221,7 @@ contour_file.close()
 os.remove(nodes_file)
 os.remove(arcs_file)
 
-print 'Done! :)'
+print 'contour_tree_vtk.py Done! :)'
 
 # Close Paraview instance
 os._exit(0)

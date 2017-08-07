@@ -1,13 +1,15 @@
 import sys
 import os
 from writeNodesEdges import writeObjects
+from helper import *
 
 # Get branch decomposition of CT from Recon
 # First line has the number of nodes and edges
 # Then the list of edges
 # Followed by nodes [node-index, node-position, scalar-function, node-type, x, y, z]
 branch_file = sys.argv[1]
-file_name = os.path.splitext(os.path.basename(branch_file))[0]
+
+file_name = get_file_name(branch_file)
 
 branchfile = open(branch_file, 'rb')
 
@@ -29,20 +31,21 @@ types = []
 # Adjacency list
 connections = {}
 
-# Random values
-missing_nodes = [2,20]
-
-# Create types for new node types
-MISSING_NODE = 6
-MISSING_BEND_NODE = 7
-INITIAL_BEND_NODE = 0
+# Read missing nodes from file
+try:
+	missing_nodes_file = sys.argv[2]
+	with open(missing_nodes_file) as f:
+		missing_nodes = f.readlines()
+	missing_nodes = [int(node.strip()) for node in missing_nodes]
+except IndexError:
+	missing_nodes = []
 
 # Iterate through edges
 for i in range(0, edge_count):
 	edge = tuple(map(int, branchfile.readline().strip().split(" ")))
 	edges.append(edge)
 	
-# Sometimes you can get more number of nodes in the first line during simplification
+# Sometimes you can get more number of nodes in the first line during simplification from Recon
 # ToDo: Check what is going on
 
 # Iterate through nodes
@@ -91,8 +94,9 @@ for node in missing_nodes:
 			types[i] = MISSING_NODE
 
 # Make VTP file from processed data
-writeObjects(positions, edges=edges, scalar= scalars, name='scalars', scalar2 = types, name2 = 'NodeType', fileout=file_name+'-visual')
+writeObjects(positions, edges=edges, scalar= scalars, name = 'scalars', scalar2 = types, name2 = 'NodeType', fileout = get_output_path(branch_file, [VISUAL_SUFFIX], False))
 
-branchfile.close()
+os.remove(branch_file)
+#branchfile.close()
 
-print 'Done! :)'
+print 'makeVTPfromRG.py Done! :)'
