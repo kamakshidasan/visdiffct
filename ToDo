@@ -1,4 +1,3 @@
-- Make helper better [function for file_replace and system-call with multiple arguments]
+- Do not import the colour map from file every single time!
 - Upload code of Recon into a folder [and remove jar]
-- Write better comments for unutilised Reingold algorithm [Useful for 2D Merge Trees]
-- Check seeGraph for a single CT and write a commented line in run.py
+- Write better comments for unutilised Reingold algorithm [Useful for 2D Merge Trees] [Too big a graveyard for Adhitya]

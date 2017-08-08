@@ -1,6 +1,8 @@
 import csv, sys, os
 from helper import *
 
+# Output of this file should be missing_nodes.txt
+
 # Store the function value for each vertex
 values_1 = {}
 values_2 = {}
@@ -92,4 +94,4 @@ print 'Degree Difference: ', degree_difference
 os.remove(sys.argv[1])
 os.remove(sys.argv[2])
 
-print 'Done :)'
+print 'measure.py Done! :P'

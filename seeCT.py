@@ -6,9 +6,8 @@ import os
 #### disable automatic camera reset on 'Show'
 paraview.simple._DisableFirstRenderCameraReset()
 
-file_name = 'adhitya.vtp'
-file_path = os.getcwd() + os.sep + file_name
-tv_98graphvisualvtp = XMLPolyDataReader(FileName=[file_path])
+file_path = '/home/raghavendra/Downloads/diffCT/data/output/tv_75-visual.vtp'
+vtpFile = XMLPolyDataReader(FileName=[file_path])
 
 # get active view
 renderView1 = GetActiveViewOrCreate('RenderView')
@@ -16,15 +15,15 @@ renderView1 = GetActiveViewOrCreate('RenderView')
 # renderView1.ViewSize = [909, 548]
 
 # show data in view
-tv_98graphvisualvtpDisplay = Show(tv_98graphvisualvtp, renderView1)
+vtpFileDisplay = Show(vtpFile, renderView1)
 # trace defaults for the display properties.
-tv_98graphvisualvtpDisplay.Representation = 'Surface'
+vtpFileDisplay.Representation = 'Surface'
 
 # reset view to fit data
 renderView1.ResetCamera()
 
 # create a new 'TTK SphereFromPoint'
-tTKSphereFromPoint1 = TTKSphereFromPoint(Input=tv_98graphvisualvtp)
+tTKSphereFromPoint1 = TTKSphereFromPoint(Input=vtpFile)
 
 # Properties modified on tTKSphereFromPoint1
 tTKSphereFromPoint1.Radius = 0.15
@@ -35,13 +34,13 @@ tTKSphereFromPoint1Display = Show(tTKSphereFromPoint1, renderView1)
 tTKSphereFromPoint1Display.Representation = 'Surface'
 
 # hide data in view
-Hide(tv_98graphvisualvtp, renderView1)
+Hide(vtpFile, renderView1)
 
 # set active source
-SetActiveSource(tv_98graphvisualvtp)
+SetActiveSource(vtpFile)
 
 # show data in view
-tv_98graphvisualvtpDisplay = Show(tv_98graphvisualvtp, renderView1)
+vtpFileDisplay = Show(vtpFile, renderView1)
 
 # set active source
 SetActiveSource(tTKSphereFromPoint1)
@@ -57,8 +56,6 @@ tTKSphereFromPoint1Display.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'NodeType'
 nodeTypeLUT = GetColorTransferFunction('NodeType')
-
-
 
 # create a new 'Threshold'
 threshold1 = Threshold(Input=tTKSphereFromPoint1)
@@ -80,10 +77,10 @@ threshold1Display.SetScalarBarVisibility(renderView1, True)
 
 
 # set active source
-SetActiveSource(tv_98graphvisualvtp)
+SetActiveSource(vtpFile)
 
 # create a new 'Tube'
-tube1 = Tube(Input=tv_98graphvisualvtp)
+tube1 = Tube(Input=vtpFile)
 
 # Properties modified on tube1
 tube1.Vectors = [None, '']
@@ -95,30 +92,39 @@ tube1Display = Show(tube1, renderView1)
 tube1Display.Representation = 'Surface'
 
 # hide data in view
-Hide(tv_98graphvisualvtp, renderView1)
+Hide(vtpFile, renderView1)
 
 # set active source
-SetActiveSource(tv_98graphvisualvtp)
+SetActiveSource(vtpFile)
 
 # show data in view
-tv_98graphvisualvtpDisplay = Show(tv_98graphvisualvtp, renderView1)
+vtpFileDisplay = Show(vtpFile, renderView1)
 
 # hide data in view
-Hide(tv_98graphvisualvtp, renderView1)
+Hide(vtpFile, renderView1)
 
 # show data in view
-tv_98graphvisualvtpDisplay = Show(tv_98graphvisualvtp, renderView1)
+vtpFileDisplay = Show(vtpFile, renderView1)
 
-#### saving camera placements for all active views
+# hide color bar/color legend
+threshold1Display.SetScalarBarVisibility(renderView1, False)
+
+# Import a Colour Map specific for Critical Points display
+ImportPresets(filename= 'CTNodeColourMap.json')
+
+# Apply a preset using its name. Note this may not work as expected when presets have duplicate names.
+nodeTypeLUT.ApplyPreset('CTNodeColourMap', True)
+
+# get opacity transfer function/opacity map for 'NodeType'
+nodeTypePWF = GetOpacityTransferFunction('NodeType')
+
+# Apply a preset using its name. Note this may not work as expected when presets have duplicate names.
+nodeTypePWF.ApplyPreset('CTNodeColourMap', True)
+
+#change interaction mode for render view
+renderView1.InteractionMode = '2D'
 
 # current camera placement for renderView1
 renderView1.CameraPosition = [1.5966980755329132, -0.017842769622802734, 18.758492643983434]
 renderView1.CameraFocalPoint = [1.5966980755329132, -0.017842769622802734, -0.1044418215751648]
 renderView1.CameraParallelScale = 4.882086686207304
-
-#### uncomment the following to render all views
-# RenderAllViews()
-# alternatively, if you want to write images, you can use SaveScreenshot(...).
-
-#data = SM.Fetch(tv_98graphvisualvtp)
-#cells = data.GetCellData().GetArr	

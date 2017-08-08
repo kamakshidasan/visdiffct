@@ -1,4 +1,4 @@
-import os, re
+import os, re, shutil
 
 # List of constants
 CSV_EXTENSION = '.csv'
@@ -20,14 +20,17 @@ WILDCARD_2 = 'sushmitha'
 INPUT_FOLDER = 'input'
 OUTPUT_FOLDER = 'output'
 
+PYTHON_COMMAND = 'python'
+PARAVIEW_COMMAND = 'paraview'
+JAR_COMMAND = 'java -jar'
+
 # Create types for new node types
 MISSING_NODE = 6
 MISSING_BEND_NODE = 7
 INITIAL_BEND_NODE = 0
 
-
-# Replace a wildcard in a file
-def file_replace(fname, pat, s_after):
+# Replace a pattern with another in a file
+def replace_wildcard(fname, pat, s_after):
     # first, see if the pattern is even in the file.
     with open(fname) as f:
         if not any(re.search(pat, line) for line in f):
@@ -63,6 +66,11 @@ def get_parent_path(file_path):
 def get_input_path(file_path):
 	return os.path.join(get_parent_path(file_path), INPUT_FOLDER)
 
+# Get a new filename in the output directory
+# This takes in a file and gives out a string with ../output/file_name
+# arguments can be sent in a list to the aforementioned string
+# output_folder can be set to False for ../file_name
+
 def get_output_path(file_path, arguments, output_folder = True):
 	output_path = os.path.join(get_parent_path(file_path), OUTPUT_FOLDER)
 
@@ -75,7 +83,51 @@ def get_output_path(file_path, arguments, output_folder = True):
 		output_path += argument
 
 	return output_path
-	
 
 def join_file_path(file_path, file_name):
 	return os.path.join(file_path, file_name)
+
+def run_python_script(script_name, arguments):
+	# python <script_name>
+	command = PYTHON_COMMAND + ' ' + script_name
+	 	
+	# python <script_name> <arguments>
+	# Add all the arguments to the command
+	for argument in arguments:
+		command += ' ' + argument
+	os.system(command)
+	
+# You can't send in arguments here!
+def run_paraview_script(script_name):
+	# paraview --script= <script_name>
+	command = PARAVIEW_COMMAND + ' --script=' + script_name
+	os.system(command)
+
+def run_jar(jar_file, arguments):
+	# java -jar <jar_file>
+	command = JAR_COMMAND + ' ' + jar_file
+
+	# java -jar <jar_file> <arguments>
+	for argument in arguments:
+		command += ' ' + argument
+	os.system(command)
+
+def get_output_folder(file_path):
+	# This will give you a path with the file name appended	
+	output_path = get_output_path(file_path, [])
+	
+	# Get the output folder
+	output_path = get_parent_path(output_path)
+	return output_path
+
+# Create an output folder if it does not exist
+def create_output_folder(file_path):
+	output_path = get_output_folder(file_path)
+
+	# Check if it exists
+	if not os.path.exists(output_path):
+		os.makedirs(output_path)
+
+# Delete the output folder
+def delete_output_folder(file_path):
+	shutil.rmtree(get_output_folder(file_path))
